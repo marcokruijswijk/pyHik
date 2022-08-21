@@ -41,6 +41,7 @@ from pyhik.constants import (
 
 
 _LOGGING = logging.getLogger(__name__)
+_LOGGING.setLevel(logging.DEBUG)
 
 # Hide nuisance requests logging
 logging.getLogger('urllib3').setLevel(logging.ERROR)
@@ -581,13 +582,16 @@ class HikCamera(object):
         try:
             etype = SENSOR_MAP[tree.find(
                 self.element_query('eventType', CONTEXT_ALERT)).text.lower()]
-            
+
             # Since this pasing is different and not really usefull for now, just return without error.
             if len(etype) > 0 and etype == 'Ongoing Events':
-                return
-            
-            estate = tree.find(
-                self.element_query('eventState', CONTEXT_ALERT)).text
+                query = '/'.join([self.element_query(element, CONTEXT_ALERT) for element in ['DurationList', 'Duration', 'relationEvent']])
+                etype = SENSOR_MAP[tree.find(query).text.lower()]
+                estate = 'active'
+                _LOGGING.error('Duration remapped to %s', etype)
+            else:
+                estate = tree.find(
+                    self.element_query('eventState', CONTEXT_ALERT)).text
 
             for idtype in ID_TYPES:
                 echid = tree.find(self.element_query(idtype, CONTEXT_ALERT))
