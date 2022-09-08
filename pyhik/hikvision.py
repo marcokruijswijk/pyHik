@@ -41,7 +41,6 @@ from pyhik.constants import (
 
 
 _LOGGING = logging.getLogger(__name__)
-_LOGGING.setLevel(logging.DEBUG)
 
 # Hide nuisance requests logging
 logging.getLogger('urllib3').setLevel(logging.ERROR)
